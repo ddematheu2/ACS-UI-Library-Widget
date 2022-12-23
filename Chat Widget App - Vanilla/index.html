@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Chat Widget App - Vanilla</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="chat-widget">
+            <div id="chat-widget-header">
+                <div id="chat-widget-header-title">Chat Widget App</div>
+                <button  class='widget'> ? </button >
+                <div class='chatWidget'></div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script src="https://github.com/Azure/communication-ui-library/releases/latest/download/chatComposite.js"></script>
+<script>
+    var open = false;
+    const button = document.querySelector('.widget');
+    const content = document.querySelector('.chatWidget');
+    button.addEventListener('click', async function() {
+        if(!open){
+            open = !open;
+            content.style.display = 'block';
+            button.innerHTML = 'X';
+            let response = await getChatContext();
+            console.log(response);
+            const chatAdapter = await chatComposite.loadChatComposite(
+                {
+                displayName: "Test User",
+                threadId: response.threadId,
+                endpoint: response.endpoint,
+                userId: response.user,
+                token: response.userToken
+                },
+                content,
+                { key: new Date() }
+            );
+        } else if (open) {
+            open = !open;
+            content.style.display = 'none';
+            button.innerHTML = '?';
+        }
+    });
+
+    async function getChatContext(){
+        console.log("getChatContext");
+        let response = await fetch("http://localhost:7071/api/ChatWidgetFunction");
+        let data = await response.json();
+        return data;
+    }
+</script>
+
+
+<script type="module">
+</script>
